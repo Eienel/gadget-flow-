@@ -8,8 +8,13 @@ create table if not exists public.suppliers (
   id          uuid primary key default gen_random_uuid(),
   name        text not null,
   code        text not null unique,
+  is_admin    boolean not null default false,
   created_at  timestamptz not null default now()
 );
+
+-- For existing installs created before the is_admin column existed:
+alter table public.suppliers
+  add column if not exists is_admin boolean not null default false;
 
 -- Products -------------------------------------------------------------------
 create table if not exists public.products (
@@ -95,6 +100,8 @@ create policy "product_images_delete"
   using (bucket_id = 'product-images');
 
 -- Seed admin supplier --------------------------------------------------------
-insert into public.suppliers (name, code)
-values ('Admin', 'ADMIN-SECRET-2025')
-on conflict (code) do nothing;
+-- Code is random and only used as a URL slug. Admin access is determined
+-- by the is_admin flag, not by comparing the code string in client JS.
+insert into public.suppliers (name, code, is_admin)
+values ('Admin', 'P75L2G2KY9C57XD2LNFL', true)
+on conflict (code) do update set is_admin = true;

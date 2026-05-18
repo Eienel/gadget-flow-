@@ -10,8 +10,6 @@ import ProductCard from '@/components/ProductCard';
 import AddProductModal from '@/components/AddProductModal';
 import SupplierGenerator from '@/components/SupplierGenerator';
 
-const ADMIN_CODE = 'ADMIN-SECRET-2025';
-
 const TABS = [
   { key: 'all', label: 'All' },
   { key: 'available', label: 'Live' },
@@ -30,7 +28,7 @@ export default function SupplierPage() {
   const [addOpen, setAddOpen] = useState(false);
   const [genOpen, setGenOpen] = useState(false);
 
-  const isAdmin = code === ADMIN_CODE;
+  const isAdmin = !!supplier?.is_admin;
 
   useEffect(() => {
     let active = true;
