@@ -1,36 +1,28 @@
 import './globals.css';
-import { Cormorant_Garamond, DM_Mono } from 'next/font/google';
+import { Inter } from 'next/font/google';
 
-const cormorant = Cormorant_Garamond({
+const inter = Inter({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  style: ['normal', 'italic'],
-  variable: '--font-cormorant',
-  display: 'swap',
-});
-
-const dmMono = DM_Mono({
-  subsets: ['latin'],
-  weight: ['300', '400', '500'],
-  variable: '--font-dm-mono',
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-inter',
   display: 'swap',
 });
 
 export const metadata = {
-  title: 'GadgetFlow — Live Stock',
-  description: 'Live gadget reseller stock. Updated in real time.',
+  title: 'GadgetFlow — Stock, beautifully live.',
+  description: 'A new way for resellers to share live stock. Updated by the second.',
 };
 
 export const viewport = {
-  themeColor: '#050505',
+  themeColor: '#ffffff',
   width: 'device-width',
   initialScale: 1,
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${dmMono.variable}`}>
-      <body className="min-h-screen bg-bg text-offwhite">{children}</body>
+    <html lang="en" className={inter.variable}>
+      <body className="min-h-screen bg-canvas text-ink antialiased">{children}</body>
     </html>
   );
 }

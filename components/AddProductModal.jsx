@@ -94,31 +94,46 @@ export default function AddProductModal({ open, onClose, supplierId }) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-end md:items-center justify-center animate-overlayIn"
-      style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)' }}
+      style={{ background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(10px)' }}
       onClick={onClose}
     >
       <div
-        className="w-full md:max-w-md bg-surface border border-border animate-modalIn"
-        style={{ borderRadius: 12, padding: 28 }}
+        className="w-full md:max-w-lg bg-canvas border border-line animate-modalIn"
+        style={{
+          borderRadius: 28,
+          padding: 32,
+          boxShadow: '0 30px 90px -10px rgba(0,0,0,0.25)',
+          margin: 16,
+        }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="display-serif text-offwhite" style={{ fontSize: 26 }}>
-            New Product
-          </h2>
+        <div className="flex items-start justify-between mb-7">
+          <div>
+            <p className="text-xs font-semibold text-accent tracking-wide uppercase">
+              New
+            </p>
+            <h2
+              className="display-md text-ink mt-1"
+              style={{ fontSize: 30 }}
+            >
+              Post a product
+            </h2>
+          </div>
           <button
             onClick={onClose}
-            className="label-mono text-offwhite/50 hover:text-offwhite"
-            style={{ fontSize: 10 }}
+            className="w-9 h-9 rounded-full bg-canvas3 hover:bg-[#e8e8ed] flex items-center justify-center text-ink2 transition-colors"
+            aria-label="Close"
           >
-            ✕ CLOSE
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <path d="M6 6 L18 18 M6 18 L18 6" />
+            </svg>
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-1">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* Drop zone */}
           <div
-            className="dropzone mb-4"
+            className="dropzone"
             onClick={() => fileInput.current?.click()}
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => {
@@ -135,18 +150,12 @@ export default function AddProductModal({ open, onClose, supplierId }) {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="text-center">
-                <div
-                  className="display-serif text-offwhite/60"
-                  style={{ fontSize: 18 }}
-                >
-                  Drop image
+              <div className="text-center px-6">
+                <div className="text-ink font-semibold text-base">
+                  Drop image here
                 </div>
-                <div
-                  className="label-mono text-offwhite/40 mt-1"
-                  style={{ fontSize: 9 }}
-                >
-                  OR CLICK TO UPLOAD
+                <div className="text-muted text-sm mt-1">
+                  or click to upload
                 </div>
               </div>
             )}
@@ -160,20 +169,20 @@ export default function AddProductModal({ open, onClose, supplierId }) {
           </div>
 
           <input
-            className="line-input"
-            placeholder="PRODUCT NAME"
+            className="field"
+            placeholder="Product name"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
           <input
-            className="line-input"
-            placeholder="SPECS · 128GB / SPACE BLACK / SEALED"
+            className="field"
+            placeholder="Specs · 128GB · Space Black · Sealed"
             value={specs}
             onChange={(e) => setSpecs(e.target.value)}
           />
           <input
-            className="line-input"
-            placeholder="PRICE (NGN)"
+            className="field"
+            placeholder="Price (₦)"
             type="number"
             inputMode="numeric"
             value={price}
@@ -181,26 +190,15 @@ export default function AddProductModal({ open, onClose, supplierId }) {
           />
 
           {error && (
-            <p
-              className="label-mono text-bad mt-3"
-              style={{ fontSize: 10 }}
-            >
-              {error}
-            </p>
+            <p className="text-bad text-sm font-medium mt-1">{error}</p>
           )}
 
           <button
             type="submit"
             disabled={submitting}
-            className="mt-6 w-full label-mono bg-gold text-bg disabled:opacity-50"
-            style={{
-              padding: '14px 16px',
-              fontSize: 11,
-              borderRadius: 0,
-              letterSpacing: '0.2em',
-            }}
+            className="btn btn-accent btn-lg w-full mt-3 disabled:opacity-60"
           >
-            {submitting ? 'UPLOADING…' : 'PUBLISH PRODUCT'}
+            {submitting ? 'Publishing…' : 'Publish product'}
           </button>
         </form>
       </div>

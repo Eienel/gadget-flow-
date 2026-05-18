@@ -50,108 +50,99 @@ export default function ProductCard({
   }
 
   const supplierName =
-    product.suppliers?.name ||
-    product.supplier_name ||
-    null;
+    product.suppliers?.name || product.supplier_name || null;
 
   return (
     <article
-      className="bg-surface border border-border animate-riseIn"
-      style={{
-        borderRadius: 12,
-        animationDelay: `${Math.min(index, 12) * 60}ms`,
-      }}
+      className="card animate-riseIn p-3"
+      style={{ animationDelay: `${Math.min(index, 12) * 60}ms` }}
     >
-      <div className="relative card-img-wrap">
+      {/* Image */}
+      <div className="relative">
         <div
-          className={`relative w-full ${isSold ? 'sold-fade' : ''}`}
-          style={{ aspectRatio: '3 / 4', background: '#0a0a0a' }}
+          className={`img-wrap relative w-full ${isSold ? 'sold-fade' : ''}`}
+          style={{ aspectRatio: '4 / 5', background: '#f5f5f7' }}
         >
           {product.image_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={product.image_url}
               alt={product.name}
-              className="card-img w-full h-full object-cover block"
-              style={{ borderRadius: 0 }}
+              className="w-full h-full object-cover block"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center label-mono text-offwhite/30 text-[10px]">
-              NO IMAGE
+            <div className="w-full h-full flex items-center justify-center text-muted2 text-sm font-medium">
+              No image
             </div>
           )}
         </div>
 
+        {/* Supplier pill (top-left) */}
         {showSupplierBadge && supplierName && (
-          <span
-            className="absolute top-3 left-3 label-mono"
-            style={{
-              fontSize: 9,
-              background: 'rgba(5,5,5,0.85)',
-              color: '#f0ece4',
-              padding: '6px 10px',
-              border: '1px solid #1c1c1c',
-              borderRadius: 999,
-              backdropFilter: 'blur(6px)',
-            }}
-          >
+          <span className="pill pill-supplier absolute top-3 left-3">
             {supplierName}
           </span>
         )}
 
+        {/* Status pill (top-right) */}
         <span
-          className="absolute top-3 right-3 label-mono flex items-center gap-1.5"
-          style={{
-            fontSize: 9,
-            background: 'rgba(5,5,5,0.85)',
-            color: isSold ? '#f87171' : '#4ade80',
-            padding: '6px 10px',
-            border: '1px solid #1c1c1c',
-            borderRadius: 999,
-            backdropFilter: 'blur(6px)',
-          }}
+          className={`absolute top-3 right-3 pill ${
+            isSold ? 'pill-sold' : 'pill-available'
+          }`}
         >
-          <span style={{ fontSize: 8 }}>●</span>
-          {isSold ? 'SOLD' : 'AVAILABLE'}
+          <span
+            className="pill-dot"
+            style={{
+              background: isSold ? '#b3261e' : '#0a7d2c',
+            }}
+          />
+          {isSold ? 'Sold' : 'Live'}
         </span>
       </div>
 
-      <div className={`p-5 ${isSold ? 'sold-fade' : ''}`}>
+      {/* Body */}
+      <div className={`px-2 pt-5 pb-3 ${isSold ? 'sold-fade' : ''}`}>
         <h3
-          className="display-serif text-offwhite"
-          style={{ fontSize: 20, lineHeight: 1.2 }}
+          className="text-ink font-semibold tracking-tight leading-tight"
+          style={{ fontSize: 20, letterSpacing: '-0.02em' }}
         >
           {product.name}
         </h3>
 
         {product.specs && (
-          <p
-            className="label-mono text-offwhite/50 mt-2"
-            style={{ fontSize: 10 }}
-          >
+          <p className="text-muted text-sm mt-1.5 leading-snug">
             {product.specs}
           </p>
         )}
 
-        <div
-          className="label-mono text-gold mt-4"
-          style={{ fontSize: 22, letterSpacing: '0.04em' }}
-        >
-          ₦{formatPrice(product.price)}
+        <div className="mt-4 flex items-baseline gap-1">
+          <span
+            className="text-ink font-bold"
+            style={{ fontSize: 28, letterSpacing: '-0.03em' }}
+          >
+            ₦{formatPrice(product.price)}
+          </span>
         </div>
 
-        <div className="mt-5 pt-4 border-t border-border flex items-center justify-between">
+        {/* Actions */}
+        <div className="mt-5 pt-4 border-t border-line flex items-center justify-between gap-2">
           {canEdit ? (
             <button
               onClick={toggleStatus}
               disabled={busy}
-              className="label-mono text-offwhite/80 hover:text-gold transition-colors disabled:opacity-50"
-              style={{ fontSize: 10 }}
+              className={`btn ${
+                isSold ? 'btn-ghost' : 'btn-primary'
+              } disabled:opacity-50`}
+              style={{ fontSize: 13, padding: '8px 16px' }}
             >
-              {busy ? '...' : isSold ? '↺ Mark Available' : '✓ Mark Sold'}
+              {busy
+                ? '...'
+                : isSold
+                ? '↺ Mark available'
+                : '✓ Mark sold'}
             </button>
           ) : (
-            <span className="label-mono text-offwhite/40" style={{ fontSize: 10 }}>
+            <span className="text-muted text-sm font-medium">
               {isSold ? 'No longer available' : 'In stock'}
             </span>
           )}
@@ -161,14 +152,15 @@ export default function ProductCard({
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Share on WhatsApp"
-            className="text-offwhite/70 hover:text-ok transition-colors"
             title="Share on WhatsApp"
+            className="w-9 h-9 rounded-full bg-canvas3 hover:bg-[#e8f7ee] flex items-center justify-center transition-colors group"
           >
             <svg
-              width="20"
-              height="20"
+              width="16"
+              height="16"
               viewBox="0 0 24 24"
               fill="currentColor"
+              className="text-muted group-hover:text-[#25d366] transition-colors"
               aria-hidden="true"
             >
               <path d="M20.5 3.5A11.94 11.94 0 0 0 12 0C5.37 0 0 5.37 0 12c0 2.11.55 4.17 1.6 5.99L0 24l6.18-1.62A11.94 11.94 0 0 0 12 24c6.63 0 12-5.37 12-12 0-3.2-1.25-6.21-3.5-8.5zM12 21.82a9.81 9.81 0 0 1-5-1.37l-.36-.21-3.67.96.98-3.58-.23-.37A9.83 9.83 0 1 1 21.82 12 9.82 9.82 0 0 1 12 21.82zm5.39-7.36c-.3-.15-1.75-.86-2.02-.96s-.47-.15-.67.15-.77.96-.94 1.16-.35.22-.65.07a8.07 8.07 0 0 1-2.37-1.46 8.94 8.94 0 0 1-1.64-2.05c-.17-.3 0-.46.13-.6.13-.13.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51l-.57-.01a1.1 1.1 0 0 0-.8.37 3.35 3.35 0 0 0-1.05 2.5c0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.08 1.75-.71 2-1.39.25-.69.25-1.27.18-1.39-.08-.13-.28-.2-.58-.35z" />

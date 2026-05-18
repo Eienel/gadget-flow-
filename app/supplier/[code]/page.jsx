@@ -13,9 +13,9 @@ import SupplierGenerator from '@/components/SupplierGenerator';
 const ADMIN_CODE = 'ADMIN-SECRET-2025';
 
 const TABS = [
-  { key: 'all', label: 'ALL' },
-  { key: 'available', label: 'AVAILABLE' },
-  { key: 'sold', label: 'SOLD' },
+  { key: 'all', label: 'All' },
+  { key: 'available', label: 'Live' },
+  { key: 'sold', label: 'Sold' },
 ];
 
 export default function SupplierPage() {
@@ -32,7 +32,6 @@ export default function SupplierPage() {
 
   const isAdmin = code === ADMIN_CODE;
 
-  // 1. Validate supplier code
   useEffect(() => {
     let active = true;
     async function check() {
@@ -52,7 +51,6 @@ export default function SupplierPage() {
     };
   }, [code]);
 
-  // 2. Load products + realtime
   useEffect(() => {
     if (!supplier) return;
     let active = true;
@@ -91,51 +89,58 @@ export default function SupplierPage() {
     return products.filter((p) => p.status === filter);
   }, [products, filter]);
 
+  const liveCount = products.filter((p) => p.status === 'available').length;
+  const soldCount = products.filter((p) => p.status === 'sold').length;
+
   // --- BLOCKED STATE ---
   if (checked && !supplier) {
     return (
-      <main className="min-h-screen flex items-center justify-center px-6">
-        <div className="max-w-md text-center">
-          <span
-            className="label-mono text-bad"
-            style={{ fontSize: 10 }}
-          >
-            ◈ ACCESS DENIED
+      <main className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden">
+        <div
+          className="orb"
+          style={{
+            width: 500,
+            height: 500,
+            top: -120,
+            right: -120,
+            background: 'radial-gradient(circle, #ff8fab 0%, transparent 70%)',
+            opacity: 0.4,
+          }}
+        />
+        <div
+          className="orb"
+          style={{
+            width: 500,
+            height: 500,
+            bottom: -120,
+            left: -120,
+            background: 'radial-gradient(circle, #5ac8fa 0%, transparent 70%)',
+            opacity: 0.3,
+          }}
+        />
+        <div className="relative z-10 max-w-md text-center">
+          <span className="inline-block text-xs font-semibold text-bad bg-white/70 backdrop-blur px-3 py-1.5 rounded-full border border-line">
+            ACCESS DENIED
           </span>
           <h1
-            className="display-serif text-offwhite mt-5"
-            style={{ fontSize: 48, lineHeight: 1, fontStyle: 'italic' }}
+            className="display-xl mt-6 text-ink"
+            style={{ fontSize: 'clamp(36px, 6vw, 56px)' }}
           >
-            This link is not valid.
+            This link isn&apos;t valid.
           </h1>
-          <p
-            className="label-mono text-offwhite/50 mt-6"
-            style={{ fontSize: 11, lineHeight: 1.8 }}
-          >
-            Contact your admin.
-          </p>
-          <Link
-            href="/"
-            className="inline-block mt-10 label-mono border border-border text-offwhite/70 hover:text-gold hover:border-gold transition-colors"
-            style={{ padding: '12px 20px', fontSize: 10 }}
-          >
-            ← BACK TO CATALOG
+          <p className="text-muted text-lg mt-5">Contact your admin.</p>
+          <Link href="/" className="btn btn-primary btn-lg mt-10">
+            ← Back to catalog
           </Link>
         </div>
       </main>
     );
   }
 
-  // --- INITIAL LOADER ---
   if (!checked) {
     return (
       <main className="min-h-screen flex items-center justify-center">
-        <p
-          className="label-mono text-offwhite/40"
-          style={{ fontSize: 11 }}
-        >
-          AUTHENTICATING…
-        </p>
+        <p className="text-muted text-sm font-medium">Authenticating…</p>
       </main>
     );
   }
@@ -143,137 +148,163 @@ export default function SupplierPage() {
   return (
     <>
       {/* Header */}
-      <header
-        className="sticky top-0 z-30 border-b border-border"
-        style={{ background: 'rgba(5,5,5,0.85)', backdropFilter: 'blur(10px)' }}
-      >
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-5 flex items-center justify-between gap-4">
-          <Link href="/" className="flex flex-col min-w-0">
-            <span
-              className="display-serif text-offwhite truncate"
-              style={{ fontSize: 22 }}
-            >
-              ◈ GadgetFlow
+      <header className="sticky top-0 z-30 glass-strong">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 h-14 flex items-center justify-between gap-3">
+          <Link href="/" className="flex items-center gap-2 min-w-0">
+            <span className="text-base font-semibold text-ink tracking-tight truncate">
+              GadgetFlow
             </span>
-            <span
-              className="label-mono text-offwhite/40 mt-0.5"
-              style={{ fontSize: 9 }}
-            >
-              LIVE STOCK · UPDATED IN REAL TIME
+            <span className="hidden sm:inline text-xs text-muted2 truncate">
+              · {isAdmin ? 'Admin' : supplier.name}
             </span>
           </Link>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {isAdmin && (
               <button
                 onClick={() => setGenOpen(true)}
-                className="label-mono border border-border text-offwhite/70 hover:text-gold hover:border-gold transition-colors"
-                style={{ padding: '11px 16px', fontSize: 10 }}
+                className="btn btn-ghost"
               >
-                + NEW SUPPLIER
+                + Supplier
               </button>
             )}
             <button
               onClick={() => setAddOpen(true)}
-              className="label-mono bg-gold text-bg"
-              style={{
-                padding: '12px 18px',
-                fontSize: 10,
-                letterSpacing: '0.18em',
-                borderRadius: 0,
-              }}
+              className="btn btn-accent"
             >
-              + ADD PRODUCT
+              + Add product
             </button>
           </div>
         </div>
       </header>
 
-      {/* Identity bar */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-10 pt-10 pb-6">
-        <span
-          className="label-mono text-gold"
-          style={{ fontSize: 10 }}
-        >
-          {isAdmin ? '◈ ADMIN DASHBOARD' : '◈ SUPPLIER DASHBOARD'}
-        </span>
-        <h1
-          className="display-serif text-offwhite mt-4"
+      {/* Hero / Identity */}
+      <section className="relative overflow-hidden">
+        <div className="smoke-layer" />
+        <div
+          className="orb animate-floatA"
           style={{
-            fontSize: 'clamp(36px, 6vw, 64px)',
-            lineHeight: 1,
-            fontStyle: 'italic',
+            width: 480,
+            height: 480,
+            top: -120,
+            left: -120,
+            background:
+              'radial-gradient(circle, #5ac8fa 0%, #0071e3 60%, transparent 70%)',
+            opacity: 0.35,
           }}
-        >
-          {supplier.name}
-        </h1>
-        <p
-          className="label-mono text-offwhite/40 mt-4"
-          style={{ fontSize: 10 }}
-        >
-          {isAdmin
-            ? 'VIEWING ALL STOCK ACROSS SUPPLIERS'
-            : 'YOUR PRIVATE STOCK · ONLY YOU SEE THIS'}
-        </p>
+        />
+        <div
+          className="orb animate-floatB"
+          style={{
+            width: 440,
+            height: 440,
+            top: -100,
+            right: -100,
+            background:
+              'radial-gradient(circle, #bd66ff 0%, #ff8fab 60%, transparent 70%)',
+            opacity: 0.32,
+          }}
+        />
+
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-10 pt-16 lg:pt-24 pb-10">
+          <span className="inline-flex items-center gap-2 text-xs font-semibold text-accent bg-white/70 backdrop-blur px-3 py-1.5 rounded-full border border-line">
+            {isAdmin ? 'ADMIN DASHBOARD' : 'SUPPLIER DASHBOARD'}
+          </span>
+
+          <h1
+            className="display-xl mt-6"
+            style={{ fontSize: 'clamp(40px, 7vw, 84px)' }}
+          >
+            {supplier.name}.
+          </h1>
+
+          <p className="text-muted text-lg lg:text-xl mt-4 max-w-2xl tracking-tight">
+            {isAdmin
+              ? 'You see everything. All stock across every supplier. Real-time.'
+              : 'Your private inventory. Only you can post here. Only buyers see your live stock.'}
+          </p>
+
+          {/* Stats */}
+          <div className="mt-10 flex gap-3 flex-wrap">
+            <div className="card !p-5 min-w-[140px]">
+              <p className="text-xs font-semibold text-muted2 uppercase tracking-wide">
+                Total
+              </p>
+              <p className="display-md text-ink mt-1" style={{ fontSize: 32 }}>
+                {products.length}
+              </p>
+            </div>
+            <div className="card !p-5 min-w-[140px]">
+              <p className="text-xs font-semibold text-ok uppercase tracking-wide flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-ok animate-pulse" />
+                Live
+              </p>
+              <p className="display-md text-ink mt-1" style={{ fontSize: 32 }}>
+                {liveCount}
+              </p>
+            </div>
+            <div className="card !p-5 min-w-[140px]">
+              <p className="text-xs font-semibold text-muted2 uppercase tracking-wide">
+                Sold
+              </p>
+              <p className="display-md text-ink mt-1" style={{ fontSize: 32 }}>
+                {soldCount}
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Filter tabs */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-10 pb-8">
-        <div className="flex items-center justify-between border-b border-border pb-4">
-          <div className="flex gap-6">
+      <section className="max-w-7xl mx-auto px-6 lg:px-10 pt-6 pb-8 border-t border-line">
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div className="flex items-center gap-1 bg-canvas3 p-1 rounded-full">
             {TABS.map((t) => (
               <button
                 key={t.key}
                 onClick={() => setFilter(t.key)}
-                className={`label-mono transition-colors ${
+                className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
                   filter === t.key
-                    ? 'text-gold'
-                    : 'text-offwhite/40 hover:text-offwhite/70'
+                    ? 'bg-white text-ink shadow-sm'
+                    : 'text-muted hover:text-ink'
                 }`}
-                style={{ fontSize: 11 }}
               >
                 {t.label}
               </button>
             ))}
           </div>
-          <span
-            className="label-mono text-offwhite/40"
-            style={{ fontSize: 10 }}
-          >
-            {filtered.length} {filtered.length === 1 ? 'ITEM' : 'ITEMS'}
+          <span className="text-muted text-sm font-medium">
+            {filtered.length} {filtered.length === 1 ? 'item' : 'items'}
           </span>
         </div>
       </section>
 
       {/* Grid */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-10 pb-24">
+      <section className="max-w-7xl mx-auto px-6 lg:px-10 pb-32">
         {loading ? (
-          <p
-            className="label-mono text-offwhite/40 text-center py-20"
-            style={{ fontSize: 11 }}
-          >
-            LOADING STOCK…
+          <p className="text-muted text-center py-24 text-base font-medium">
+            Loading…
           </p>
         ) : filtered.length === 0 ? (
-          <div
-            className="text-center py-24 border border-border"
-            style={{ borderRadius: 12 }}
-          >
+          <div className="text-center py-24 bg-canvas2 border border-line rounded-3xl">
             <p
-              className="display-serif text-offwhite/60"
+              className="display-md text-ink"
               style={{ fontSize: 28 }}
             >
               No products yet.
             </p>
-            <p
-              className="label-mono text-offwhite/40 mt-3"
-              style={{ fontSize: 10 }}
-            >
-              TAP + ADD PRODUCT TO POST YOUR FIRST ITEM
+            <p className="text-muted mt-3">
+              Tap <span className="font-semibold text-ink">+ Add product</span> to post your first item.
             </p>
+            <button
+              onClick={() => setAddOpen(true)}
+              className="btn btn-accent btn-lg mt-8"
+            >
+              + Add product
+            </button>
           </div>
         ) : (
-          <div className="masonry">
+          <div className="product-grid">
             {filtered.map((p, i) => (
               <ProductCard
                 key={p.id}
