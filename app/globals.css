@@ -1,0 +1,117 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html, body {
+  background: #050505;
+  color: #f0ece4;
+  font-family: var(--font-dm-mono), monospace;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Editorial micro details */
+.label-mono {
+  font-family: var(--font-dm-mono), monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.display-serif {
+  font-family: var(--font-cormorant), serif;
+  font-style: italic;
+}
+
+/* Borderless underline input */
+.line-input {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #1c1c1c;
+  padding: 14px 0 10px;
+  color: #f0ece4;
+  font-family: var(--font-dm-mono), monospace;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  outline: none;
+  transition: border-color 200ms ease;
+}
+.line-input::placeholder {
+  color: #555;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 10px;
+}
+.line-input:focus {
+  border-bottom-color: #c9a84c;
+}
+
+/* Drop zone */
+.dropzone {
+  width: 100%;
+  height: 160px;
+  border: 1px dashed #2a2a2a;
+  background: #0a0a0a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 220ms ease, box-shadow 220ms ease, background 220ms ease;
+}
+.dropzone:hover {
+  border-color: #c9a84c;
+  box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.25), 0 0 24px -8px rgba(201, 168, 76, 0.45);
+  background: #0e0c08;
+}
+
+/* Editorial masonry-ish grid using CSS columns */
+.masonry {
+  column-count: 1;
+  column-gap: 28px;
+}
+@media (min-width: 640px) {
+  .masonry { column-count: 2; }
+}
+@media (min-width: 1024px) {
+  .masonry { column-count: 3; }
+}
+.masonry > * {
+  break-inside: avoid;
+  margin-bottom: 28px;
+  display: block;
+}
+
+/* Card image hover */
+.card-img-wrap { overflow: hidden; }
+.card-img {
+  transition: transform 600ms ease;
+}
+.card-img-wrap:hover .card-img {
+  transform: scale(1.03);
+}
+
+/* Sold state */
+.sold-fade {
+  opacity: 0.45;
+  transition: opacity 400ms ease;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #050505; }
+::-webkit-scrollbar-thumb { background: #1c1c1c; }
+::-webkit-scrollbar-thumb:hover { background: #2a2a2a; }
+
+/* Phone glow */
+.phone-glow::before {
+  content: '';
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(ellipse at center, rgba(201, 168, 76, 0.22), transparent 60%);
+  filter: blur(40px);
+  z-index: -1;
+}
