@@ -1,9 +1,16 @@
 /* ── Tiny product silhouettes used inside the mockup cards ── */
 
 function IPhoneArt() {
+  // 4×4 app grid layout — viewBox is square so the phone fills the card
+  const COLS = [18.8, 24.77, 30.74, 36.71];
+  const ROWS = [10, 16, 22, 28];
+  const ICON = 4.5;
+  const RX = 1.1;
+
   return (
-    <svg viewBox="0 0 60 90" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+    <svg viewBox="0 0 60 60" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
       <defs>
+        {/* Titanium frame */}
         <linearGradient id="ip-frame" x1="0" x2="1" y1="0" y2="0">
           <stop offset="0%" stopColor="#1c1c1e" />
           <stop offset="35%" stopColor="#5e5e60" />
@@ -11,30 +18,221 @@ function IPhoneArt() {
           <stop offset="65%" stopColor="#5e5e60" />
           <stop offset="100%" stopColor="#1c1c1e" />
         </linearGradient>
+        {/* iOS-style wallpaper — deep ocean / aurora */}
         <linearGradient id="ip-wall" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor="#0b3b78" />
-          <stop offset="35%" stopColor="#6a2a8f" />
-          <stop offset="70%" stopColor="#c54275" />
-          <stop offset="100%" stopColor="#e8854c" />
+          <stop offset="0%" stopColor="#0a1f4a" />
+          <stop offset="50%" stopColor="#1e2a78" />
+          <stop offset="100%" stopColor="#3a1463" />
         </linearGradient>
+
+        {/* App icon gradients */}
+        <linearGradient id="ic-green" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stopColor="#65e676" />
+          <stop offset="100%" stopColor="#34c759" />
+        </linearGradient>
+        <linearGradient id="ic-blue" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stopColor="#6abdff" />
+          <stop offset="100%" stopColor="#1f8aff" />
+        </linearGradient>
+        <linearGradient id="ic-sky" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stopColor="#7ad3ff" />
+          <stop offset="100%" stopColor="#0a84ff" />
+        </linearGradient>
+        <linearGradient id="ic-yellow" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stopColor="#ffe071" />
+          <stop offset="60%" stopColor="#ffd60a" />
+          <stop offset="100%" stopColor="#ffffff" />
+        </linearGradient>
+        <linearGradient id="ic-music" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stopColor="#ff7a9e" />
+          <stop offset="100%" stopColor="#ff2d55" />
+        </linearGradient>
+        <linearGradient id="ic-gray" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stopColor="#c8c8cd" />
+          <stop offset="100%" stopColor="#5b5b60" />
+        </linearGradient>
+        <linearGradient id="ic-maps" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stopColor="#b3e58a" />
+          <stop offset="60%" stopColor="#75c2eb" />
+          <stop offset="100%" stopColor="#0a84ff" />
+        </linearGradient>
+        <linearGradient id="ic-orange" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stopColor="#ffb547" />
+          <stop offset="100%" stopColor="#ff9500" />
+        </linearGradient>
+        <radialGradient id="ic-photos" cx="0.5" cy="0.5" r="0.6">
+          <stop offset="0%" stopColor="#fff200" />
+          <stop offset="30%" stopColor="#ff3b30" />
+          <stop offset="60%" stopColor="#af52de" />
+          <stop offset="85%" stopColor="#0a84ff" />
+          <stop offset="100%" stopColor="#30d158" />
+        </radialGradient>
+
+        {/* Glass sheen */}
         <radialGradient id="ip-shine" cx="0.5" cy="0.15" r="0.6">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.25" />
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.18" />
           <stop offset="60%" stopColor="#ffffff" stopOpacity="0" />
         </radialGradient>
       </defs>
-      {/* titanium body */}
-      <rect x="19" y="4" width="22" height="82" rx="5.5" fill="url(#ip-frame)" />
-      {/* inner bezel */}
-      <rect x="19.9" y="4.9" width="20.2" height="80.2" rx="4.6" fill="#000" />
-      {/* display + wallpaper */}
-      <rect x="20.9" y="6.5" width="18.2" height="77" rx="3.6" fill="url(#ip-wall)" />
-      {/* glass reflection sheen */}
-      <rect x="20.9" y="6.5" width="18.2" height="77" rx="3.6" fill="url(#ip-shine)" />
-      {/* dynamic island */}
-      <rect x="26.4" y="8.4" width="7.2" height="2.4" rx="1.2" fill="#000" />
-      {/* status bar dots — tiny suggestion of icons */}
-      <circle cx="23.5" cy="9.6" r="0.4" fill="#ffffff" opacity="0.85" />
-      <circle cx="36.5" cy="9.6" r="0.4" fill="#ffffff" opacity="0.85" />
+
+      {/* Titanium body */}
+      <rect x="16" y="1" width="28" height="58" rx="5.5" fill="url(#ip-frame)" />
+      {/* Inner bezel */}
+      <rect x="16.6" y="1.6" width="26.8" height="56.8" rx="5" fill="#000" />
+      {/* Display wallpaper */}
+      <rect x="17.4" y="2.4" width="25.2" height="55.2" rx="4" fill="url(#ip-wall)" />
+
+      {/* Aurora blobs on wallpaper for depth */}
+      <g style={{ mixBlendMode: 'screen' }}>
+        <circle cx="24" cy="36" r="5" fill="#a78bfa" opacity="0.35" />
+        <circle cx="36" cy="46" r="4.5" fill="#ec4899" opacity="0.3" />
+        <circle cx="22" cy="50" r="3.5" fill="#60a5fa" opacity="0.3" />
+      </g>
+
+      {/* Dynamic Island */}
+      <rect x="26.4" y="3.8" width="7.2" height="2.4" rx="1.2" fill="#000" />
+      {/* Status bar text */}
+      <text
+        x="19"
+        y="5.7"
+        fontSize="1.6"
+        fill="#fff"
+        fontWeight="700"
+        fontFamily="-apple-system, system-ui, sans-serif"
+      >
+        9:41
+      </text>
+      {/* signal / battery hint */}
+      <circle cx="38" cy="4.9" r="0.3" fill="#fff" opacity="0.85" />
+      <rect x="39.2" y="4.4" width="1.6" height="1" rx="0.2" fill="#fff" opacity="0.85" />
+
+      {/* ── App grid 4×4 ── */}
+      {/* Row 1: Phone, Messages, FaceTime, Mail */}
+      <rect x={COLS[0]} y={ROWS[0]} width={ICON} height={ICON} rx={RX} fill="url(#ic-green)" />
+      <rect x={COLS[1]} y={ROWS[0]} width={ICON} height={ICON} rx={RX} fill="url(#ic-green)" />
+      <rect x={COLS[2]} y={ROWS[0]} width={ICON} height={ICON} rx={RX} fill="url(#ic-green)" />
+      <rect x={COLS[3]} y={ROWS[0]} width={ICON} height={ICON} rx={RX} fill="url(#ic-blue)" />
+
+      {/* Row 2: Safari, Photos, Camera, Notes */}
+      <rect x={COLS[0]} y={ROWS[1]} width={ICON} height={ICON} rx={RX} fill="#ffffff" />
+      {/* Safari compass dot */}
+      <circle cx={COLS[0] + ICON / 2} cy={ROWS[1] + ICON / 2} r="0.9" fill="#1f8aff" />
+      <rect
+        x={COLS[0] + ICON / 2 - 0.15}
+        y={ROWS[1] + ICON / 2 - 0.7}
+        width="0.3"
+        height="1.4"
+        fill="#ff453a"
+        transform={`rotate(45 ${COLS[0] + ICON / 2} ${ROWS[1] + ICON / 2})`}
+      />
+
+      <rect x={COLS[1]} y={ROWS[1]} width={ICON} height={ICON} rx={RX} fill="url(#ic-photos)" />
+      {/* Photos petal hint */}
+      <circle cx={COLS[1] + ICON / 2} cy={ROWS[1] + ICON / 2} r="0.4" fill="#ffffff" opacity="0.8" />
+
+      <rect x={COLS[2]} y={ROWS[1]} width={ICON} height={ICON} rx={RX} fill="url(#ic-gray)" />
+      {/* Camera lens */}
+      <circle cx={COLS[2] + ICON / 2} cy={ROWS[1] + ICON / 2} r="0.9" fill="#1c1c1e" />
+      <circle cx={COLS[2] + ICON / 2} cy={ROWS[1] + ICON / 2} r="0.45" fill="#3a3a3c" />
+
+      <rect x={COLS[3]} y={ROWS[1]} width={ICON} height={ICON} rx={RX} fill="url(#ic-yellow)" />
+      {/* Notes lines */}
+      <rect x={COLS[3] + 0.5} y={ROWS[1] + 1.5} width="2.5" height="0.25" fill="#a87d00" opacity="0.55" />
+      <rect x={COLS[3] + 0.5} y={ROWS[1] + 2.1} width="2.0" height="0.25" fill="#a87d00" opacity="0.55" />
+      <rect x={COLS[3] + 0.5} y={ROWS[1] + 2.7} width="2.3" height="0.25" fill="#a87d00" opacity="0.55" />
+
+      {/* Row 3: Maps, Music, App Store, Settings */}
+      <rect x={COLS[0]} y={ROWS[2]} width={ICON} height={ICON} rx={RX} fill="url(#ic-maps)" />
+      {/* Map pin */}
+      <circle cx={COLS[0] + ICON / 2 + 0.3} cy={ROWS[2] + ICON / 2} r="0.4" fill="#ff3b30" />
+
+      <rect x={COLS[1]} y={ROWS[2]} width={ICON} height={ICON} rx={RX} fill="url(#ic-music)" />
+      {/* Music note */}
+      <circle cx={COLS[1] + ICON / 2 - 0.5} cy={ROWS[2] + ICON / 2 + 0.4} r="0.35" fill="#ffffff" />
+      <rect x={COLS[1] + ICON / 2 - 0.2} y={ROWS[2] + 0.8} width="0.25" height="1.6" fill="#ffffff" />
+
+      <rect x={COLS[2]} y={ROWS[2]} width={ICON} height={ICON} rx={RX} fill="#ffffff" />
+      {/* App Store A */}
+      <text
+        x={COLS[2] + ICON / 2}
+        y={ROWS[2] + ICON / 2 + 0.8}
+        fontSize="2.4"
+        fill="#0a84ff"
+        fontWeight="900"
+        textAnchor="middle"
+        fontFamily="-apple-system, system-ui, sans-serif"
+      >
+        A
+      </text>
+
+      <rect x={COLS[3]} y={ROWS[2]} width={ICON} height={ICON} rx={RX} fill="url(#ic-gray)" />
+      {/* Settings gear */}
+      <circle cx={COLS[3] + ICON / 2} cy={ROWS[2] + ICON / 2} r="0.8" fill="none" stroke="#fff" strokeWidth="0.25" />
+      <circle cx={COLS[3] + ICON / 2} cy={ROWS[2] + ICON / 2} r="0.3" fill="#fff" />
+
+      {/* Row 4: Calculator, Weather, Calendar, Clock */}
+      <rect x={COLS[0]} y={ROWS[3]} width={ICON} height={ICON} rx={RX} fill="#1c1c1e" />
+      {/* Calculator orange button */}
+      <rect x={COLS[0] + 2.4} y={ROWS[3] + 0.5} width="0.6" height="0.6" rx="0.1" fill="#ff9500" />
+      <rect x={COLS[0] + 0.5} y={ROWS[3] + 2.5} width="0.4" height="0.4" rx="0.08" fill="#48484a" />
+      <rect x={COLS[0] + 1.1} y={ROWS[3] + 2.5} width="0.4" height="0.4" rx="0.08" fill="#48484a" />
+      <rect x={COLS[0] + 1.7} y={ROWS[3] + 2.5} width="0.4" height="0.4" rx="0.08" fill="#48484a" />
+      <rect x={COLS[0] + 2.4} y={ROWS[3] + 2.5} width="0.4" height="0.4" rx="0.08" fill="#ff9500" />
+
+      <rect x={COLS[1]} y={ROWS[3]} width={ICON} height={ICON} rx={RX} fill="url(#ic-sky)" />
+      {/* Weather sun */}
+      <circle cx={COLS[1] + ICON / 2} cy={ROWS[3] + ICON / 2} r="0.6" fill="#ffd60a" />
+
+      <rect x={COLS[2]} y={ROWS[3]} width={ICON} height={ICON} rx={RX} fill="#ffffff" />
+      {/* Calendar red header + day number */}
+      <rect x={COLS[2]} y={ROWS[3]} width={ICON} height="0.8" rx={RX} fill="#ff3b30" />
+      <rect x={COLS[2]} y={ROWS[3] + 0.4} width={ICON} height="0.4" fill="#ff3b30" />
+      <text
+        x={COLS[2] + ICON / 2}
+        y={ROWS[3] + ICON / 2 + 0.9}
+        fontSize="1.7"
+        fill="#1c1c1e"
+        fontWeight="700"
+        textAnchor="middle"
+        fontFamily="-apple-system, system-ui, sans-serif"
+      >
+        18
+      </text>
+
+      <rect x={COLS[3]} y={ROWS[3]} width={ICON} height={ICON} rx={RX} fill="#1c1c1e" />
+      {/* Clock face */}
+      <circle cx={COLS[3] + ICON / 2} cy={ROWS[3] + ICON / 2} r="1.1" fill="none" stroke="#fff" strokeWidth="0.18" />
+      <rect x={COLS[3] + ICON / 2 - 0.08} y={ROWS[3] + ICON / 2 - 0.9} width="0.16" height="0.9" fill="#fff" />
+      <rect x={COLS[3] + ICON / 2 - 0.08} y={ROWS[3] + ICON / 2 - 0.08} width="0.7" height="0.16" fill="#ff453a" />
+
+      {/* Page indicator dots */}
+      <circle cx="28.5" cy="35.5" r="0.35" fill="#ffffff" opacity="0.95" />
+      <circle cx="30.0" cy="35.5" r="0.35" fill="#ffffff" opacity="0.45" />
+      <circle cx="31.5" cy="35.5" r="0.35" fill="#ffffff" opacity="0.45" />
+
+      {/* ── Dock ── */}
+      <rect
+        x="18.2"
+        y="39"
+        width="23.6"
+        height="14"
+        rx="3.8"
+        fill="rgba(255,255,255,0.16)"
+        stroke="rgba(255,255,255,0.25)"
+        strokeWidth="0.18"
+      />
+      {/* Dock icons: Phone, Safari, Messages, Music */}
+      <rect x={COLS[0]} y={43.75} width={ICON} height={ICON} rx={RX} fill="url(#ic-green)" />
+      <rect x={COLS[1]} y={43.75} width={ICON} height={ICON} rx={RX} fill="#ffffff" />
+      <circle cx={COLS[1] + ICON / 2} cy={43.75 + ICON / 2} r="1.1" fill="#1f8aff" />
+      <rect x={COLS[2]} y={43.75} width={ICON} height={ICON} rx={RX} fill="url(#ic-green)" />
+      <rect x={COLS[3]} y={43.75} width={ICON} height={ICON} rx={RX} fill="url(#ic-music)" />
+
+      {/* Home indicator bar */}
+      <rect x="26.5" y="55.4" width="7" height="0.6" rx="0.3" fill="#fff" opacity="0.7" />
+
+      {/* Glass sheen on top of everything */}
+      <rect x="17.4" y="2.4" width="25.2" height="55.2" rx="4" fill="url(#ip-shine)" pointerEvents="none" />
     </svg>
   );
 }
