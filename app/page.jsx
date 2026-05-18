@@ -66,16 +66,10 @@ export default function Home() {
             </span>
           </Link>
           <nav className="flex items-center gap-6">
-            <span className="hidden md:inline-flex items-center gap-2 text-xs font-medium text-muted">
+            <span className="inline-flex items-center gap-2 text-xs font-medium text-muted">
               <span className="w-1.5 h-1.5 rounded-full bg-ok animate-pulse" />
               {liveCount} live now
             </span>
-            <Link
-              href="/supplier/ADMIN-SECRET-2025"
-              className="text-sm font-medium text-ink hover:text-accent transition-colors"
-            >
-              Admin
-            </Link>
           </nav>
         </div>
       </header>
@@ -144,12 +138,6 @@ export default function Home() {
                 <a href="#catalog" className="btn btn-primary btn-lg">
                   Browse stock →
                 </a>
-                <Link
-                  href="/supplier/ADMIN-SECRET-2025"
-                  className="btn btn-ghost btn-lg"
-                >
-                  Open admin
-                </Link>
               </div>
             </div>
 
