@@ -7,6 +7,7 @@ export default function AddProductModal({ open, onClose, supplierId }) {
   const [name, setName] = useState('');
   const [specs, setSpecs] = useState('');
   const [price, setPrice] = useState('');
+  const [quantity, setQuantity] = useState(1);
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -18,6 +19,7 @@ export default function AddProductModal({ open, onClose, supplierId }) {
       setName('');
       setSpecs('');
       setPrice('');
+      setQuantity(1);
       setFile(null);
       setPreview(null);
       setError('');
@@ -73,11 +75,14 @@ export default function AddProductModal({ open, onClose, supplierId }) {
     try {
       let imageUrl = null;
       if (file) imageUrl = await uploadImage(file);
+      const qty = Math.max(1, Number(quantity) || 1);
       const { error: insErr } = await supabase.from('products').insert({
         name: name.trim(),
         specs: specs.trim() || null,
         price: Number(price),
         image_url: imageUrl,
+        quantity: qty,
+        sold_count: 0,
         status: 'available',
         supplier_id: supplierId,
       });
@@ -188,6 +193,38 @@ export default function AddProductModal({ open, onClose, supplierId }) {
             value={price}
             onChange={(e) => setPrice(e.target.value)}
           />
+
+          {/* Quantity stepper */}
+          <div
+            className="flex items-center justify-between bg-canvas3 px-4 py-3"
+            style={{ borderRadius: 14 }}
+          >
+            <div>
+              <p className="text-sm font-medium text-ink">Quantity in stock</p>
+              <p className="text-xs text-muted2 mt-0.5">How many units you have</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                className="w-9 h-9 rounded-full bg-white border border-line text-ink font-semibold hover:bg-canvas2 active:scale-95 transition"
+                aria-label="Decrease quantity"
+              >
+                −
+              </button>
+              <span className="text-base font-semibold text-ink min-w-[28px] text-center tabular-nums">
+                {quantity}
+              </span>
+              <button
+                type="button"
+                onClick={() => setQuantity((q) => q + 1)}
+                className="w-9 h-9 rounded-full bg-white border border-line text-ink font-semibold hover:bg-canvas2 active:scale-95 transition"
+                aria-label="Increase quantity"
+              >
+                +
+              </button>
+            </div>
+          </div>
 
           {error && (
             <p className="text-bad text-sm font-medium mt-1">{error}</p>

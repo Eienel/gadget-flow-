@@ -3,14 +3,28 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 
+// Admin's WhatsApp number — buyers on the public catalog message this number
+// directly with a pre-filled inquiry about the product they tapped.
+const ADMIN_WA_NUMBER = '2349125131379';
+
 function formatPrice(value) {
   const n = Number(value || 0);
   return n.toLocaleString('en-NG', { maximumFractionDigits: 0 });
 }
 
-function buildWhatsAppMessage(product, siteUrl) {
-  const statusLine =
-    product.status === 'available' ? 'Status: ✅ In Stock' : 'Status: ❌ Sold';
+// Message for a SHARE action (supplier/admin forwarding a product to anyone).
+function buildShareMessage(product, siteUrl) {
+  const qty = product.quantity ?? 0;
+  const sold = product.sold_count ?? 0;
+  const isSoldOut = qty === 0;
+
+  let statusLine;
+  if (isSoldOut) {
+    statusLine = `Status: ❌ Sold out${sold ? ` (${sold} sold)` : ''}`;
+  } else {
+    statusLine = `Status: ✅ ${qty} in stock${sold ? ` · ${sold} sold` : ''}`;
+  }
+
   const lines = [
     `*${product.name}*`,
     product.specs || '',
@@ -22,6 +36,20 @@ function buildWhatsAppMessage(product, siteUrl) {
   return lines.filter(Boolean).join('\n');
 }
 
+// Message a BUYER sends to the admin when they tap a product on the catalog.
+function buildBuyerInquiry(product) {
+  const lines = [
+    "Hi! I'm interested in this from your catalog:",
+    '',
+    `*${product.name}*`,
+    product.specs || '',
+    `Price: ₦${formatPrice(product.price)}`,
+    '',
+    'Is it still available?',
+  ];
+  return lines.filter(Boolean).join('\n');
+}
+
 export default function ProductCard({
   product,
   index = 0,
@@ -29,21 +57,44 @@ export default function ProductCard({
   showSupplierBadge = false,
 }) {
   const [busy, setBusy] = useState(false);
-  const isSold = product.status === 'sold';
+
+  const quantity = product.quantity ?? (product.status === 'sold' ? 0 : 1);
+  const soldCount = product.sold_count ?? 0;
+  const isSoldOut = quantity === 0;
 
   const siteUrl =
     typeof window !== 'undefined' ? window.location.origin : '';
-  const waHref = `https://wa.me/?text=${encodeURIComponent(
-    buildWhatsAppMessage(product, siteUrl)
-  )}`;
 
-  async function toggleStatus() {
-    if (!canEdit || busy) return;
+  // Public catalog → direct chat with admin, buyer-style message
+  // Supplier/admin dashboard → open share sheet, share-style message
+  const waHref = canEdit
+    ? `https://wa.me/?text=${encodeURIComponent(buildShareMessage(product, siteUrl))}`
+    : `https://wa.me/${ADMIN_WA_NUMBER}?text=${encodeURIComponent(buildBuyerInquiry(product))}`;
+  const waLabel = canEdit ? 'Share on WhatsApp' : 'Order on WhatsApp';
+
+  async function sellOne() {
+    if (!canEdit || busy || isSoldOut) return;
     setBusy(true);
-    const next = isSold ? 'available' : 'sold';
+    const newQty = quantity - 1;
+    const newSold = soldCount + 1;
     const { error } = await supabase
       .from('products')
-      .update({ status: next })
+      .update({
+        quantity: newQty,
+        sold_count: newSold,
+        status: newQty === 0 ? 'sold' : 'available',
+      })
+      .eq('id', product.id);
+    if (error) console.error(error);
+    setBusy(false);
+  }
+
+  async function restock() {
+    if (!canEdit || busy) return;
+    setBusy(true);
+    const { error } = await supabase
+      .from('products')
+      .update({ quantity: quantity + 1, status: 'available' })
       .eq('id', product.id);
     if (error) console.error(error);
     setBusy(false);
@@ -52,15 +103,24 @@ export default function ProductCard({
   const supplierName =
     product.suppliers?.name || product.supplier_name || null;
 
+  // Stock summary string
+  let stockLine;
+  if (isSoldOut) {
+    stockLine = soldCount > 0 ? `Sold out · ${soldCount} sold` : 'Sold out';
+  } else if (soldCount > 0) {
+    stockLine = `${soldCount} sold · ${quantity} in stock`;
+  } else {
+    stockLine = `${quantity} in stock`;
+  }
+
   return (
     <article
       className="card animate-riseIn p-3"
       style={{ animationDelay: `${Math.min(index, 12) * 60}ms` }}
     >
-      {/* Image */}
       <div className="relative">
         <div
-          className={`img-wrap relative w-full ${isSold ? 'sold-fade' : ''}`}
+          className={`img-wrap relative w-full ${isSoldOut ? 'sold-fade' : ''}`}
           style={{ aspectRatio: '4 / 5', background: '#f5f5f7' }}
         >
           {product.image_url ? (
@@ -77,31 +137,26 @@ export default function ProductCard({
           )}
         </div>
 
-        {/* Supplier pill (top-left) */}
         {showSupplierBadge && supplierName && (
           <span className="pill pill-supplier absolute top-3 left-3">
             {supplierName}
           </span>
         )}
 
-        {/* Status pill (top-right) */}
         <span
           className={`absolute top-3 right-3 pill ${
-            isSold ? 'pill-sold' : 'pill-available'
+            isSoldOut ? 'pill-sold' : 'pill-available'
           }`}
         >
           <span
             className="pill-dot"
-            style={{
-              background: isSold ? '#b3261e' : '#0a7d2c',
-            }}
+            style={{ background: isSoldOut ? '#b3261e' : '#0a7d2c' }}
           />
-          {isSold ? 'Sold' : 'Live'}
+          {isSoldOut ? 'Sold' : 'Live'}
         </span>
       </div>
 
-      {/* Body */}
-      <div className={`px-2 pt-5 pb-3 ${isSold ? 'sold-fade' : ''}`}>
+      <div className={`px-2 pt-5 pb-3 ${isSoldOut ? 'sold-fade' : ''}`}>
         <h3
           className="text-ink font-semibold tracking-tight leading-tight"
           style={{ fontSize: 20, letterSpacing: '-0.02em' }}
@@ -124,26 +179,34 @@ export default function ProductCard({
           </span>
         </div>
 
-        {/* Actions */}
+        <p className="text-muted text-sm font-medium mt-2 tabular-nums">
+          {stockLine}
+        </p>
+
         <div className="mt-5 pt-4 border-t border-line flex items-center justify-between gap-2">
           {canEdit ? (
-            <button
-              onClick={toggleStatus}
-              disabled={busy}
-              className={`btn ${
-                isSold ? 'btn-ghost' : 'btn-primary'
-              } disabled:opacity-50`}
-              style={{ fontSize: 13, padding: '8px 16px' }}
-            >
-              {busy
-                ? '...'
-                : isSold
-                ? '↺ Mark available'
-                : '✓ Mark sold'}
-            </button>
+            isSoldOut ? (
+              <button
+                onClick={restock}
+                disabled={busy}
+                className="btn btn-ghost disabled:opacity-50"
+                style={{ fontSize: 13, padding: '8px 16px' }}
+              >
+                {busy ? '...' : '↺ Restock'}
+              </button>
+            ) : (
+              <button
+                onClick={sellOne}
+                disabled={busy}
+                className="btn btn-primary disabled:opacity-50"
+                style={{ fontSize: 13, padding: '8px 16px' }}
+              >
+                {busy ? '...' : '✓ Sold one'}
+              </button>
+            )
           ) : (
             <span className="text-muted text-sm font-medium">
-              {isSold ? 'No longer available' : 'In stock'}
+              {isSoldOut ? 'No longer available' : 'In stock'}
             </span>
           )}
 
@@ -151,8 +214,8 @@ export default function ProductCard({
             href={waHref}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Share on WhatsApp"
-            title="Share on WhatsApp"
+            aria-label={waLabel}
+            title={waLabel}
             className="w-9 h-9 rounded-full bg-canvas3 hover:bg-[#e8f7ee] flex items-center justify-center transition-colors group"
           >
             <svg

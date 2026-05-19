@@ -23,11 +23,18 @@ create table if not exists public.products (
   specs        text,
   price        numeric not null default 0,
   image_url    text,
+  quantity     int not null default 1 check (quantity >= 0),
+  sold_count   int not null default 0 check (sold_count >= 0),
   status       text not null default 'available'
                 check (status in ('available','sold')),
   supplier_id  uuid references public.suppliers(id) on delete cascade,
   created_at   timestamptz not null default now()
 );
+
+-- For existing installs created before quantity tracking existed:
+alter table public.products
+  add column if not exists quantity   int not null default 1,
+  add column if not exists sold_count int not null default 0;
 
 create index if not exists products_supplier_id_idx on public.products(supplier_id);
 create index if not exists products_status_idx      on public.products(status);
